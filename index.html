@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Universal Media Player - Professional Offline Media Experience</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #a855f7;
+            --secondary: #06b6d4;
+            --accent: #f59e0b;
+            --bg-dark: #0f0a1a;
+            --bg-card: #1a1025;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+        }
+        
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) #1e1030;
+        }
+        
+        *::-webkit-scrollbar { width: 8px; }
+        *::-webkit-scrollbar-track { background: #1e1030; }
+        *::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0a1a 0%, #1a0a2e 50%, #0a1628 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .font-mono { font-family: 'Fira Code', monospace; }
+        
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .bg-animation::before,
+        .bg-animation::after {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        .bg-animation::before {
+            background: #a855f7;
+            top: -200px;
+            left: -200px;
+        }
+        
+        .bg-animation::after {
+            background: #06b6d4;
+            bottom: -200px;
+            right: -200px;
+            animation-delay: -10s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(100px, 50px) scale(1.1); }
+            66% { transform: translate(-50px, 100px) scale(0.9); }
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #a855f7, #06b6d4, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gradient-text-purple {
+            background: linear-gradient(135deg, #a855f7, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glow-box {
+            box-shadow: 0 0 40px rgba(168, 85, 247, 0.2), 0 0 80px rgba(6, 182, 212, 0.1);
+        }
+        
+        .card {
+            background: linear-gradient(145deg, rgba(26, 16, 37, 0.95), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .card:hover {
+            border-color: rgba(168, 85, 247, 0.6);
+            box-shadow: 0 10px 50px rgba(168, 85, 247, 0.25);
+            transform: translateY(-5px);
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            gap: 8px;
+        }
+        
+        .styled-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .styled-table th,
+        .styled-table td {
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.15);
+        }
+        
+        .styled-table th {
+            background: linear-gradient(90deg, rgba(168, 85, 247, 0.2), rgba(6, 182, 212, 0.1));
+            font-weight: 700;
+            color: #a855f7;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .styled-table tbody tr {
+            transition: all 0.3s;
+        }
+        
+        .styled-table tbody tr:hover {
+            background: rgba(168, 85, 247, 0.08);
+        }
+        
+        .styled-table td {
+            color: #cbd5e1;
+        }
+        
+        .code-block {
+            background: linear-gradient(135deg, #0f172a, #1e1b4b);
+            border: 2px solid rgba(168, 85, 247, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #a855f7, #06b6d4, #f59e0b);
+        }
+        
+        .terminal-box {
+            background: #000000;
+            border: 2px solid #333;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        .terminal-header {
+            background: linear-gradient(90deg, #2d2d2d, #3d3d3d);
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .terminal-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+        }
+        
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            font-size: 32px;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(6, 182, 212, 0.15));
+            border: 2px solid rgba(168, 85, 247, 0.4);
+            flex-shrink: 0;
+        }
+        
+        .highlight-card {
+            background: rgba(26, 16, 37, 0.8);
+            border: 1px solid rgba(100, 116, 139, 0.3);
+            border-radius: 16px;
+            padding: 28px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .highlight-card:hover {
+            border-color: #a855f7;
+            background: rgba(168, 85, 247, 0.1);
+            transform: scale(1.03);
+        }
+        
+        .animate-float {
+            animation: floatElement 4s ease-in-out infinite;
+        }
+        
+        @keyframes floatElement {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .animate-pulse-glow {
+            animation: pulseGlow 2.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); }
+            50% { box-shadow: 0 0 50px rgba(168, 85, 247, 0.7), 0 0 80px rgba(6, 182, 212, 0.3); }
+        }
+        
+        .nav-bar {
+            backdrop-filter: blur(20px);
+            background: rgba(15, 10, 26, 0.9);
+            border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+        }
+        
+        details {
+            background: rgba(26, 16, 37, 0.9);
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        
+        details summary {
+            padding: 18px 24px;
+            cursor: pointer;
+            background: rgba(168, 85, 247, 0.05);
+            font-weight: 600;
+            color: #e2e8f0;
+            transition: all 0.3s;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+        
+        details summary::after {
+            content: '+';
+            margin-left: auto;
+            font-size: 20px;
+            font-weight: 400;
+            color: #a855f7;
+            transition: transform 0.3s;
+        }
+        
+        details[open] summary::after {
+            transform: rotate(45deg);
+        }
+        
+        details summary:hover {
+            background: rgba(168, 85, 247, 0.15);
+            color: #a855f7;
+        }
+        
+        details[open] summary {
+            border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+            color: #a855f7;
+        }
+        
+        details > div {
+            padding: 20px 24px;
+            color: #94a3b8;
+            line-height: 1.7;
+        }
+        
+        .step-number {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+        }
+        
+        .nav-link {
+            color: #94a3b8;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            color: #a855f7;
+            background: rgba(168, 85, 247, 0.1);
+        }
+        
+        .section-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+        
+        .section-title span {
+            font-size: 44px;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(100, 116, 139, 0.5);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .copy-btn:hover {
+            background: #a855f7;
+            color: white;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 14px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(168, 85, 247, 0.5);
+        }
+        
+        .btn-secondary {
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(168, 85, 247, 0.5);
+            color: #e2e8f0;
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(168, 85, 247, 0.15);
+            border-color: #a855f7;
+            color: #a855f7;
+        }
+        
+        .rainbow-line {
+            height: 3px;
+            background: linear-gradient(90deg, #a855f7, #06b6d4, #10b981, #f59e0b, #ef4444, #a855f7);
+            background-size: 200% 100%;
+            animation: rainbowSlide 4s linear infinite;
+            border-radius: 2px;
+        }
+        
+        @keyframes rainbowSlide {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        
+        .keyboard-key {
+            background: linear-gradient(145deg, #2d2d2d, #1a1a1a);
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+            display: inline-block;
+            box-shadow: 0 3px 0 #111, 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .status-check {
+            color: #22c55e;
+            font-weight: 600;
+        }
+        
+        .flow-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .flow-arrow {
+            width: 2px;
+            height: 24px;
+            background: #a855f7;
+            position: relative;
+        }
+        
+        .flow-arrow::after {
+            content: '▼';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #a855f7;
+            font-size: 12px;
+        }
+        
+        .flow-box {
+            background: rgba(168, 85, 247, 0.1);
+            border: 2px solid rgba(168, 85, 247, 0.4);
+            border-radius: 12px;
+            padding: 16px 28px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+        
+        .flow-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        .flow-option {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(100, 116, 139, 0.4);
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+        
+        #backToTop {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 1000;
+            box-shadow: 0 8px 25px rgba(168, 85, 247, 0.5);
+        }
+        
+        #backToTop.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        #backToTop:hover {
+            transform: translateY(-5px);
+        }
+        
+        .toc-link {
+            display: block;
+            padding: 10px 16px;
+            color: #94a3b8;
+            border-radius: 8px;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .toc-link:hover {
+            background: rgba(168, 85, 247, 0.1);
+            color: #a855f7;
+            border-left-color: #a855f7;
+        }
+        
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .spec-card {
+            background: rgba(26, 16, 37, 0.8);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+        }
+        
+        .spec-card h4 {
+            color: #a855f7;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .mission-card {
+            text-align: center;
+            padding: 32px 24px;
+            background: rgba(26, 16, 37, 0.6);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 16px;
+        }
+        
+        .mission-card h3 {
+            color: #a855f7;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+        
+        .visualizer-bar {
+            height: 100%;
+            background: linear-gradient(to top, #a855f7, #06b6d4);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.1s;
+        }
+        
+        @keyframes visualizerPulse {
+            0%, 100% { height: 20%; }
+            50% { height: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+    
+    <!-- Navigation -->
+    <nav class="nav-bar fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">🎬</span>
+                <span class="font-bold text-xl gradient-text-purple hidden sm:block">Universal Media Player</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="#features" class="nav-link hidden md:block">Features</a>
+                <a href="#installation" class="nav-link hidden md:block">Install</a>
+                <a href="#shortcuts" class="nav-link hidden md:block">Shortcuts</a>
+                <a href="#faq" class="nav-link hidden md:block">FAQ</a>
+                <a href="https://github.com/SudhirDevOps1" target="_blank" class="btn-secondary text-sm ml-4">
+                    <i class="fab fa-github text-lg"></i>
+                    <span class="hidden sm:inline">GitHub</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24">
+        <!-- Hero Section -->
+        <section class="py-16 px-6">
+            <div class="max-w-5xl mx-auto text-center">
+                <!-- Header Banner Image -->
+                <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=180&section=header&text=🎬%20Universal%20Media%20Player&fontSize=42&fontColor=fff&animation=twinkling&fontAlignY=32&desc=Professional.%20Private.%20Performance-Driven.&descAlignY=52&descSize=18" 
+                     class="w-full rounded-2xl mb-10 shadow-2xl" alt="Header"/>
+                
+                <!-- Badges Row 1 -->
+                <div class="flex flex-wrap justify-center gap-3 mb-4">
+                    <span class="badge bg-blue-600 text-white"><i class="fab fa-windows mr-1"></i>Windows 10/11</span>
+                    <span class="badge bg-blue-500 text-white"><i class="fab fa-python mr-1"></i>Python 3.8+</span>
+                    <span class="badge bg-orange-500 text-white">🎬 VLC Engine</span>
+                    <span class="badge bg-green-600 text-white"><i class="fab fa-python mr-1"></i>PyQt5</span>
+                </div>
+                
+                <!-- Badges Row 2 -->
+                <div class="flex flex-wrap justify-center gap-3 mb-10">
+                    <span class="badge bg-emerald-600 text-white">📜 Personal Use</span>
+                    <span class="badge bg-teal-500 text-white">✈️ 100% Offline</span>
+                    <span class="badge bg-green-500 text-white">✓ Active</span>
+                    <span class="badge bg-purple-600 text-white">v2.0.0</span>
+                </div>
+                
+                <!-- Typing Animation -->
+                <div class="mb-12">
+                    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=24&duration=3000&pause=1000&color=A855F7&center=true&vCenter=true&multiline=true&random=false&width=800&height=100&lines=🎵+High-Performance+Offline+Media+Player;🎤+Real-time+Voice+Transformation+Engine;🌈+Immersive+Beat-Synced+Visualizations;🎬+Cinema-Grade+Video+Experience" alt="Typing SVG" class="mx-auto max-w-full" />
+                </div>
+                
+                <div class="rainbow-line max-w-2xl mx-auto mb-12"></div>
+                
+                <h2 class="text-2xl font-bold text-gray-200 mb-4">🌟 Star this repository if you find it useful!</h2>
+                
+                <!-- CTA Buttons -->
+                <div class="flex flex-wrap justify-center gap-4 mt-10">
+                    <a href="#installation" class="btn-primary animate-pulse-glow">
+                        <i class="fas fa-download"></i> Download Now
+                    </a>
+                    <a href="#features" class="btn-secondary">
+                        <i class="fas fa-star"></i> Explore Features
+                    </a>
+                    <a href="#how-to-use" class="btn-secondary">
+                        <i class="fas fa-book"></i> Documentation
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Table of Contents -->
+        <section class="py-12 px-6" id="toc">
+            <div class="max-w-4xl mx-auto">
+                <div class="card p-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                        <span>📋</span> Table of Contents
+                    </h2>
+                    <div class="grid md:grid-cols-3 gap-2">
+                        <a href="#about" class="toc-link">📖 About</a>
+                        <a href="#highlights" class="toc-link">✨ Highlights</a>
+                        <a href="#features" class="toc-link">💎 Key Features</a>
+                        <a href="#screenshots" class="toc-link">📸 Screenshots</a>
+                        <a href="#how-to-use" class="toc-link">📖 How To Use</a>
+                        <a href="#shortcuts" class="toc-link">⌨️ Shortcuts</a>
+                        <a href="#installation" class="toc-link">🛠️ Installation</a>
+                        <a href="#structure" class="toc-link">📁 Project Structure</a>
+                        <a href="#privacy" class="toc-link">🔒 Privacy</a>
+                        <a href="#faq" class="toc-link">❓ FAQ</a>
+                        <a href="#roadmap" class="toc-link">🗺️ Roadmap</a>
+                        <a href="#author" class="toc-link">👨‍💻 Author</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="py-20 px-6" id="about">
+            <div class="max-w-5xl mx-auto">
+                <div class="rainbow-line mb-12"></div>
+                <h2 class="section-title">
+                    <span>📖</span> About
+                </h2>
+                
+                <div class="card p-10 mb-12">
+                    <p class="text-xl text-gray-300 leading-relaxed mb-8">
+                        <strong class="text-white">Universal Media Player</strong> is a cutting-edge, high-performance, offline-first media solution exclusively designed for Windows. Built from the ground up using <strong class="text-purple-400">Python</strong>, <strong class="text-cyan-400">PyQt5</strong>, and the powerful <strong class="text-orange-400">VLC Media Engine</strong>, it delivers a seamless blend of professional-grade audio tools, immersive real-time visualizations, and a sleek, modern user interface.
+                    </p>
+                    <p class="text-lg text-gray-400">
+                        Whether you're a music enthusiast who loves visualizing beats, a content creator needing voice transformation tools, or a movie lover seeking a distraction-free cinema experience — <strong class="text-white">Universal Media Player</strong> has you covered.
+                    </p>
+                </div>
+                
+                <!-- Mission Cards -->
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="mission-card">
+                        <div class="text-4xl mb-4">🎯</div>
+                        <h3>Mission</h3>
+                        <p class="text-gray-400">Deliver the ultimate offline media experience</p>
+                    </div>
+                    <div class="mission-card">
+                        <div class="text-4xl mb-4">🔐</div>
+                        <h3>Philosophy</h3>
+                        <p class="text-gray-400">Privacy-first, no tracking, no telemetry</p>
+                    </div>
+                    <div class="mission-card">
+                        <div class="text-4xl mb-4">🚀</div>
+                        <h3>Vision</h3>
+                        <p class="text-gray-400">Empower users with professional-grade tools</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Highlights Section -->
+        <section class="py-20 px-6" id="highlights">
+            <div class="max-w-5xl mx-auto">
+                <h2 class="section-title">
+                    <span>✨</span> Highlights
+                </h2>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="highlight-card">
+                        <img src="https://img.icons8.com/fluency/96/offline.png" class="w-16 mx-auto mb-4" alt="Offline"/>
+                        <h3 class="font-bold text-white text-lg mb-2">100% Offline</h3>
+                        <p class="text-gray-400 text-sm">No internet required</p>
+                    </div>
+                    <div class="highlight-card">
+                        <img src="https://img.icons8.com/fluency/96/privacy.png" class="w-16 mx-auto mb-4" alt="Privacy"/>
+                        <h3 class="font-bold text-white text-lg mb-2">Zero Tracking</h3>
+                        <p class="text-gray-400 text-sm">Complete privacy</p>
+                    </div>
+                    <div class="highlight-card">
+                        <img src="https://img.icons8.com/fluency/96/speed.png" class="w-16 mx-auto mb-4" alt="Fast"/>
+                        <h3 class="font-bold text-white text-lg mb-2">Lightning Fast</h3>
+                        <p class="text-gray-400 text-sm">Hardware accelerated</p>
+                    </div>
+                    <div class="highlight-card">
+                        <img src="https://img.icons8.com/fluency/96/visual-effects.png" class="w-16 mx-auto mb-4" alt="Visual"/>
+                        <h3 class="font-bold text-white text-lg mb-2">Stunning Visuals</h3>
+                        <p class="text-gray-400 text-sm">Beat-synced effects</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Features Section -->
+        <section class="py-20 px-6" id="features">
+            <div class="max-w-6xl mx-auto">
+                <div class="rainbow-line mb-12"></div>
+                <h2 class="section-title">
+                    <span>💎</span> Key Features
+                </h2>
+
+                <!-- Voice Transformation -->
+                <div class="card p-8 mb-8">
+                    <div class="flex items-center gap-5 mb-8">
+                        <div class="feature-icon">🎭</div>
+                        <h3 class="text-2xl font-bold text-white">Advanced Audio & Voice Transformation</h3>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-lg font-bold text-purple-400 mb-4 flex items-center gap-2">
+                                <span>🎤</span> Real-time Voice Changer
+                            </h4>
+                            <p class="text-gray-400 mb-4">Transform your audio playback instantly with professional-grade voice presets:</p>
+                            <div class="overflow-x-auto">
+                                <table class="styled-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Preset</th>
+                                            <th>Effect</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td><strong>👧 Girl/Child</strong></td><td>High-pitched feminine voice</td></tr>
+                                        <tr><td><strong>👦 Boy/Man</strong></td><td>Deep masculine voice</td></tr>
+                                        <tr><td><strong>👹 Demon</strong></td><td>Dark, sinister tone</td></tr>
+                                        <tr><td><strong>🐿️ Chipmunk</strong></td><td>Fast, high-pitched fun</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-cyan-400 mb-4 flex items-center gap-2">
+                                <span>🎚️</span> Professional Audio Controls
+                            </h4>
+                            <div class="overflow-x-auto">
+                                <table class="styled-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Feature</th>
+                                            <th>Range</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td><strong>Playback Speed</strong></td><td>0.5x - 2.0x</td><td>Slow-mo to fast forward</td></tr>
+                                        <tr><td><strong>Pitch Control</strong></td><td>-12 to +12</td><td>Semitone adjustments</td></tr>
+                                        <tr><td><strong>Volume Boost</strong></td><td>0% - 200%</td><td>Safe amplification</td></tr>
+                                        <tr><td><strong>A-B Loop</strong></td><td>Custom</td><td>Precise segment repeat</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Audio Features -->
+                    <h4 class="text-lg font-bold text-white mt-8 mb-4 flex items-center gap-2">
+                        <span>🔊</span> Additional Audio Features
+                    </h4>
+                    <div class="overflow-x-auto">
+                        <table class="styled-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>200% Volume Boost</strong></td><td>Integrated software amplification with high-visibility safety indicators</td><td class="status-check">✅</td></tr>
+                                <tr><td><strong>A-B Loop System</strong></td><td>Set precise start and end points to loop specific segments</td><td class="status-check">✅</td></tr>
+                                <tr><td><strong>Real-time Processing</strong></td><td>All effects applied in real-time without any lag or buffering</td><td class="status-check">✅</td></tr>
+                                <tr><td><strong>Effect Reset</strong></td><td>One-click reset to return to standard audio playback</td><td class="status-check">✅</td></tr>
+                                <tr><td><strong>Preset Memory</strong></td><td>Remembers your last used voice preset and settings</td><td class="status-check">✅</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Music Visualizer -->
+                <div class="card p-8 mb-8">
+                    <div class="flex items-center gap-5 mb-6">
+                        <div class="feature-icon">🌈</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">Immersive Music Visualizer</h3>
+                            <p class="text-gray-400 mt-1">🎨 <strong>Studio Tab</strong> — Where Music Comes Alive</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Visualizer Demo -->
+                    <div class="terminal-box mb-8">
+                        <div class="terminal-header">
+                            <div class="terminal-dot bg-red-500"></div>
+                            <div class="terminal-dot bg-yellow-500"></div>
+                            <div class="terminal-dot bg-green-500"></div>
+                            <span class="ml-4 text-gray-300 font-semibold">🎵 Live Visualizer Preview</span>
+                        </div>
+                        <div class="p-8 flex items-end justify-center gap-2 h-40" id="visualizer">
+                            <!-- Bars will be generated by JS -->
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-lg font-bold text-purple-400 mb-4">🎆 Visualization Modes</h4>
+                            <div class="overflow-x-auto">
+                                <table class="styled-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Mode</th>
+                                            <th>Description</th>
+                                            <th>Intensity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td><strong>📊 Dynamic Bars</strong></td><td>Classic equalizer-style</td><td>⭐⭐⭐</td></tr>
+                                        <tr><td><strong>🌊 Glowing Waves</strong></td><td>Smooth flowing waveform</td><td>⭐⭐</td></tr>
+                                        <tr><td><strong>💃 Disco Lights</strong></td><td>Vibrant pulsating effects</td><td>⭐⭐⭐⭐</td></tr>
+                                        <tr><td><strong>🌌 Nebula Particles</strong></td><td>Space-themed particles</td><td>⭐⭐⭐⭐⭐</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-cyan-400 mb-4">⚡ Technical Specs</h4>
+                            <div class="overflow-x-auto">
+                                <table class="styled-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Specification</th>
+                                            <th>Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td><strong>Frame Rate</strong></td><td>30+ FPS</td></tr>
+                                        <tr><td><strong>Color Engine</strong></td><td>HSV-based RGB</td></tr>
+                                        <tr><td><strong>Rendering</strong></td><td>Hardware Accelerated</td></tr>
+                                        <tr><td><strong>Beat Detection</strong></td><td>Real-time FFT</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- RGB Color Engine -->
+                    <div class="code-block mt-8 font-mono text-sm">
+                        <div class="text-purple-400 font-bold mb-3">🌈 HSV-Based Color Cycling</div>
+                        <div class="text-gray-400 space-y-1">
+                            <p>├── Smooth 360° hue rotation</p>
+                            <p>├── Dynamic saturation based on audio intensity</p>
+                            <p>├── Brightness sync with beat detection</p>
+                            <p>└── Customizable color palettes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cinema Experience -->
+                <div class="card p-8 mb-8">
+                    <div class="flex items-center gap-5 mb-6">
+                        <div class="feature-icon">🎬</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">Cinema Experience</h3>
+                            <p class="text-gray-400 mt-1">🎥 <strong>Cinema Tab</strong> — Your Personal Theater</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-8 mb-8">
+                        <div>
+                            <h4 class="text-lg font-bold text-purple-400 mb-4">🖼️ Modern UI Design</h4>
+                            <ul class="space-y-3 text-gray-300">
+                                <li class="flex items-start gap-3"><span class="text-cyan-400">•</span> <strong>Frameless Window</strong> — Custom-built title bar</li>
+                                <li class="flex items-start gap-3"><span class="text-cyan-400">•</span> <strong>Native Resizing</strong> — Grab any edge or corner</li>
+                                <li class="flex items-start gap-3"><span class="text-cyan-400">•</span> <strong>Clean Interface</strong> — Minimal distractions</li>
+                                <li class="flex items-start gap-3"><span class="text-cyan-400">•</span> <strong>Dark Theme</strong> — Easy on the eyes</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-cyan-400 mb-4">🎥 Playback Features</h4>
+                            <ul class="space-y-3 text-gray-300">
+                                <li class="flex items-start gap-3"><span class="text-purple-400">•</span> <strong>Cinema Fullscreen</strong> — Hides all controls</li>
+                                <li class="flex items-start gap-3"><span class="text-purple-400">•</span> <strong>Snapshot Pro</strong> — High-res screenshots</li>
+                                <li class="flex items-start gap-3"><span class="text-purple-400">•</span> <strong>Aspect Ratio Lock</strong> — Proper proportions</li>
+                                <li class="flex items-start gap-3"><span class="text-purple-400">•</span> <strong>Smooth Seeking</strong> — Frame-accurate navigation</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Snapshot Pro Features -->
+                    <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <span>📸</span> Snapshot Pro Features
+                    </h4>
+                    <div class="overflow-x-auto">
+                        <table class="styled-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>High Resolution</strong></td><td>Captures at native video resolution</td></tr>
+                                <tr><td><strong>Auto-Naming</strong></td><td>Timestamps and movie name included</td></tr>
+                                <tr><td><strong>Custom Location</strong></td><td>Choose your save directory</td></tr>
+                                <tr><td><strong>Format Support</strong></td><td>PNG, JPG, BMP export options</td></tr>
+                                <tr><td><strong>Quick Access</strong></td><td><span class="keyboard-key">Ctrl</span> + <span class="keyboard-key">S</span> keyboard shortcut</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Screenshots Section -->
+        <section class="py-20 px-6" id="screenshots">
+            <div class="max-w-5xl mx-auto text-center">
+                <h2 class="section-title">
+                    <span>📸</span> Screenshots
+                </h2>
+                
+                <p class="text-xl text-gray-400 mb-10">📷 <strong>Coming Soon</strong> — Beautiful screenshots showcasing all features</p>
+                
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="card p-8">
+                        <div class="text-6xl mb-4">🎬</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Cinema Mode</h3>
+                        <p class="text-gray-400">HD Video Playback</p>
+                    </div>
+                    <div class="card p-8">
+                        <div class="text-6xl mb-4">🎨</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Studio Mode</h3>
+                        <p class="text-gray-400">Music Visualizer</p>
+                    </div>
+                    <div class="card p-8">
+                        <div class="text-6xl mb-4">🎤</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Voice Effects</h3>
+                        <p class="text-gray-400">Voice Changer</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How To Use Section -->
+        <section class="py-20 px-6" id="how-to-use">
+            <div class="max-w-5xl mx-auto">
+                <div class="rainbow-line mb-12"></div>
+                <h2 class="section-title">
+                    <span>📖</span> How To Use
+                </h2>
+
+                <!-- Step 1: Importing Media -->
+                <div class="card p-8 mb-8">
+                    <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                        <span class="step-number">1</span> Importing Media
+                    </h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="code-block">
+                            <div class="text-purple-400 font-bold mb-3">📂 Method 1: Button Click</div>
+                            <div class="text-gray-400 font-mono text-sm">
+                                <p>Right Panel Options:</p>
+                                <p>├── 📄 "Add Files" button</p>
+                                <p>└── 📁 "Add Folder" button</p>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <div class="text-cyan-400 font-bold mb-3">🖱️ Method 2: Drag & Drop</div>
+                            <div class="text-gray-400 font-mono text-sm">
+                                <p>Simply drag any:</p>
+                                <p>├── 🎵 Audio files</p>
+                                <p>├── 🎬 Video files</p>
+                                <p>└── 📁 Folders</p>
+                                <p>...directly into the app!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Navigating Modes -->
+                <div class="card p-8 mb-8">
+                    <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                        <span class="step-number">2</span> Navigating Modes
+                    </h3>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="styled-table">
+                            <thead>
+                                <tr>
+                                    <th>Tab</th>
+                                    <th>Purpose</th>
+                                    <th>Best For</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>🎬 Cinema</strong></td><td>High-definition video playback</td><td>Movies, TV Shows, Video Content</td></tr>
+                                <tr><td><strong>🎨 Studio</strong></td><td>Music + Live visualizations</td><td>Music, Audio Files, Podcasts</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Step 3: Voice Effects -->
+                <div class="card p-8 mb-8">
+                    <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                        <span class="step-number">3</span> Using Voice Effects
+                    </h3>
+                    
+                    <div class="flow-chart max-w-md mx-auto">
+                        <div class="flow-box">Step 1: Navigate to Studio Tab</div>
+                        <div class="flow-arrow"></div>
+                        <div class="flow-box">Step 2: Select preset from "Voice" dropdown</div>
+                        <div class="flow-options my-4">
+                            <div class="flow-option">👧 Girl/Child</div>
+                            <div class="flow-option">👦 Boy/Man</div>
+                            <div class="flow-option">👹 Demon</div>
+                            <div class="flow-option">🐿️ Chipmunk</div>
+                        </div>
+                        <div class="flow-arrow"></div>
+                        <div class="flow-box">Step 3: Fine-tune with Pitch Slider</div>
+                        <div class="flow-arrow"></div>
+                        <div class="flow-box">Step 4: Click "Reset Effects" to restore</div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Multitasking -->
+                <div class="card p-8">
+                    <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                        <span class="step-number">4</span> Multitasking Mode
+                    </h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-gray-900/50 rounded-xl p-6 border border-purple-500/30">
+                            <h4 class="text-lg font-bold text-purple-400 mb-4">📌 Always on Top</h4>
+                            <p class="text-gray-400 mb-4">Keep the player visible while working in other applications:</p>
+                            <ul class="text-gray-300 space-y-2">
+                                <li>• <strong>Click</strong> the Pin (📌) icon in the title bar</li>
+                                <li>• <strong>Or press</strong> <span class="keyboard-key">T</span> on your keyboard</li>
+                                <li>• Player stays above all other windows</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-900/50 rounded-xl p-6 border border-cyan-500/30">
+                            <h4 class="text-lg font-bold text-cyan-400 mb-4">🔲 Mini-Player Mode</h4>
+                            <p class="text-gray-400 mb-4">Compact view for minimal screen usage:</p>
+                            <ul class="text-gray-300 space-y-2">
+                                <li>• <strong>Press</strong> <span class="keyboard-key">P</span> to toggle Mini-Player</li>
+                                <li>• Small, draggable window</li>
+                                <li>• Essential controls only</li>
+                                <li>• Perfect for background music</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Keyboard Shortcuts Section -->
+        <section class="py-20 px-6" id="shortcuts">
+            <div class="max-w-5xl mx-auto">
+                <div class="rainbow-line mb-12"></div>
+                <h2 class="section-title">
+                    <span>⌨️</span> Power User Shortcuts
+                </h2>
+
+                <div class="grid md:grid-cols-3 gap-6 mb-10">
+                    <!-- Playback Controls -->
+                    <div class="card p-6">
+                        <h3 class="text-lg font-bold text-purple-400 mb-4">🎮 Playback Controls</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="keyboard-key">Space</span>
+                                <span class="text-gray-400">▶️ Play / Pause</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="keyboard-key">M</span>
+                                <span class="text-gray-400">🔇 Mute</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="keyboard-key">←</span>
+                                <span class="text-gray-400">⏪ Seek -10s</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="keyboard-key">→</span>
+                                <span class="text-gray-400">⏩ Seek +10s</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="keyboard-key">↑</span>
+                                <span class="text-gray-400">🔊 Volume Up</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="keyboard-key">↓</span>
+                                <span class="text-gray-400">🔉 Volume Down</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Window Controls -->
+                    <div class="card p-6">
+                        <h3 class="text-lg font-bold text-cyan-400 mb-4">🖼️ Window Controls</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="keyboard-key">F</span>
+                                <span class="text-gray-400">🎬 Fullscreen</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="keyboard-key">Esc</span>
+                                <span class="text-gray-400">❌ Exit Full</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="keyboard-key">T</span>
+                                <span class="text-gray-400">📌 Always Top</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="keyboard-key">P</span>
+                                <span class="text-gray-400">🔲 Mini-Player</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="keyboard-key">Ctrl+M</span>
+                                <span class="text-gray-400">➖ Minimize</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="keyboard-key">Ctrl+W</span>
+                                <span class="text-gray-400">❎ Close</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Features -->
+                    <div class="card p-6">
+                        <h3 class="text-lg font-bold text-amber-400 mb-4">🛠️ Advanced</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="keyboard-key">A</span>
+                                <span class="text-gray-400">🔁 A-B Loop</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="keyboard-key">B</span>
+                                <span class="text-gray-400">🌓 Brightness</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="keyboard-key">Ctrl+S</span>
+                                <span class="text-gray-400">📸 Screenshot</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="keyboard-key">Ctrl+F</span>
+                                <span class="text-gray-400">🔍 Search</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Reference Card -->
+                <div class="terminal-box">
+                    <div class="terminal-header">
+                        <div class="terminal-dot bg-red-500"></div>
+                        <div class="terminal-dot bg-yellow-500"></div>
+                        <div class="terminal-dot bg-green-500"></div>
+                        <span class="ml-4 text-gray-300 font-semibold">⌨️ KEYBOARD SHORTCUTS QUICK REFERENCE</span>
+                    </div>
+                    <div class="p-8 font-mono text-sm">
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <div>
+                                <div class="text-purple-400 font-bold mb-3">PLAYBACK</div>
+                                <div class="text-gray-400 space-y-1">
+                                    <p>Space = Play/Pause</p>
+                                    <p>←/→ = Seek ±10s</p>
+                                    <p>↑/↓ = Volume ±5%</p>
+                                    <p>M = Mute</p>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-cyan-400 font-bold mb-3">WINDOW</div>
+                                <div class="text-gray-400 space-y-1">
+                                    <p>F = Fullscreen</p>
+                                    <p>T = Pin on Top</p>
+                                    <p>P = Mini-Player</p>
+                                    <p>Esc = Exit</p>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-amber-400 font-bold mb-3">ADVANCED</div>
+                                <div class="text-gray-400 space-y-1">
+                                    <p>A = A-B Loop</p>
+                                    <p>B = Brightness</p>
+                                    <p>Ctrl+S = Screenshot</p>
+                                    <p>Ctrl+F = Search</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Installation Section -->
+        <section class="py-20 px-6" id="installation">
+            <div class="max-w-5xl mx-auto">
+                <div class="rainbow-line mb-12"></div>
+                <h2 class="section-title">
+                    <span>🛠️</span> Technical Setup & Installation
+                </h2>
+
+                <!-- System Requirements -->
+                <div class="spec-grid mb-10">
+                    <div class="spec-card">
+                        <h4><span>✅</span> Minimum Requirements</h4>
+                        <div class="overflow-x-auto">
+                            <table class="styled-table">
+                                <tbody>
+                                    <tr><td><strong>OS</strong></td><td>Windows 10 (64-bit)</td></tr>
+                                    <tr><td><strong>Python</strong></td><td>3.8 or higher</td></tr>
+                                    <tr><td><strong>RAM</strong></td><td>4 GB</td></tr>
+                                    <tr><td><strong>Storage</strong></td><td>200 MB free</td></tr>
+                                    <tr><td><strong>VLC</strong></td><td>3.0+ (64-bit)</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="spec-card">
+                        <h4><span>⭐</span> Recommended Specs</h4>
+                        <div class="overflow-x-auto">
+                            <table class="styled-table">
+                                <tbody>
+                                    <tr><td><strong>OS</strong></td><td>Windows 11 (64-bit)</td></tr>
+                                    <tr><td><strong>Python</strong></td><td>3.10 or higher</td></tr>
+                                    <tr><td><strong>RAM</strong></td><td>8 GB or more</td></tr>
+                                    <tr><td><strong>Storage</strong></td><td>500 MB free</td></tr>
+                                    <tr><td><strong>VLC</strong></td><td>Latest version</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Installation Steps -->
+                <div class="space-y-6">
+                    <div class="card p-8">
+                        <div class="flex items-center gap-5 mb-6">
+                            <div class="step-number">1</div>
+                            <h3 class="text-xl font-bold text-white">Install Prerequisites</h3>
+                        </div>
+                        <div class="code-block font-mono relative">
+                            <code class="text-green-400 text-base"># Ensure Python 3.8+ is installed<br>python --version<br><br># Ensure pip is up to date<br>python -m pip install --upgrade pip</code>
+                            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card p-8">
+                        <div class="flex items-center gap-5 mb-6">
+                            <div class="step-number">2</div>
+                            <h3 class="text-xl font-bold text-white">Install VLC Media Player</h3>
+                        </div>
+                        <div class="text-center">
+                            <a href="https://www.videolan.org/vlc/" target="_blank" class="btn-primary">
+                                <i class="fas fa-download"></i> Download VLC Media Player
+                            </a>
+                            <p class="text-amber-400 mt-4 font-semibold">⚠️ Important: Download the 64-bit version of VLC</p>
+                        </div>
+                    </div>
+
+                    <div class="card p-8">
+                        <div class="flex items-center gap-5 mb-6">
+                            <div class="step-number">3</div>
+                            <h3 class="text-xl font-bold text-white">Install Python Dependencies</h3>
+                        </div>
+                        <div class="code-block font-mono relative">
+                            <code class="text-green-400 text-base"># Install required packages<br>pip install PyQt5 python-vlc<br><br># Or install from requirements.txt<br>pip install -r requirements.txt</code>
+                            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="card p-8">
+                        <div class="flex items-center gap-5 mb-6">
+                            <div class="step-number">4</div>
+                            <h3 class="text-xl font-bold text-white">Run the Application</h3>
+                        </div>
+                        <div class="code-block font-mono relative">
+                            <code class="text-green-400 text-base"># Navigate to project directory<br>cd universal-media-player<br><br># Launch the application<br>python main.py</code>
+                            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting -->
+                <div class="mt-12">
+                    <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                        <span>🔧</span> Troubleshooting Installation
+                    </h3>
+                    
+                    <details>
+                        <summary><span class="text-red-400">❌</span> VLC not found error</summary>
+                        <div>
+                            <p>Ensure VLC is installed in the default location:</p>
+                            <code class="block bg-gray-900 p-3 rounded mt-2 font-mono text-sm">C:\Program Files\VideoLAN\VLC</code>
+                            <p class="mt-2">Or add VLC to your system PATH.</p>
+                        </div>
+                    </details>
+                    
+                    <details>
+                        <summary><span class="text-red-400">❌</span> PyQt5 installation fails</summary>
+                        <div>
+                            <p>Try installing with specific version:</p>
+                            <code class="block bg-gray-900 p-3 rounded mt-2 font-mono text-sm">pip install PyQt5==5.15.9</code>
+                        </div>
+                    </details>
+                    
+                    <details>
+                        <summary><span class="text-red-400">❌</span> python-vlc import error</summary>
+                        <div>
+                            <p>Ensure you have the 64-bit versions of both Python and VLC:</p>
+                            <code class="block bg-gray-900 p-3 rounded mt-2 font-mono text-sm">python -c "import struct; print(struct.calcsize('P') * 8)"<br># Should output: 64</code>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project Structure -->
+        <section class="py-20 px-6" id="structure">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="section-title">
+                    <span>📁</span> Project Structure
+                </h2>
+                
+                <div class="terminal-box">
+                    <div class="terminal-header">
+                        <div class="terminal-dot bg-red-500"></div>
+                        <div class="terminal-dot bg-yellow-500"></div>
+                        <div class="terminal-dot bg-green-500"></div>
+                        <span class="ml-4 text-gray-300 font-semibold">📂 Project Files</span>
+                    </div>
+                    <div class="p-8 font-mono text-base leading-loose">
+                        <div class="text-purple-400 text-lg font-bold">universal-media-player/</div>
+                        <div class="text-gray-500 ml-4">│</div>
+                        <div class="ml-4"><span class="text-gray-500">├── </span><span class="text-yellow-400">📄 main.py</span> <span class="text-gray-500 ml-4"># 🚀 Application entry point</span></div>
+                        <div class="ml-4"><span class="text-gray-500">├── </span><span class="text-cyan-400">📄 settings.json</span> <span class="text-gray-500 ml-4"># ⚙️ Local settings storage</span></div>
+                        <div class="ml-4"><span class="text-gray-500">├── </span><span class="text-green-400">📄 requirements.txt</span> <span class="text-gray-500 ml-4"># 📦 Python dependencies</span></div>
+                        <div class="ml-4"><span class="text-gray-500">├── </span><span class="text-blue-400">📄 README.md</span> <span class="text-gray-500 ml-4"># 📖 Documentation</span></div>
+                        <div class="ml-4"><span class="text-gray-500">├── </span><span class="text-gray-400">📄 LICENSE</span> <span class="text-gray-500 ml-4"># 📜 License information</span></div>
+                        <div class="text-gray-500 ml-4">│</div>
+                        <div class="ml-4"><span class="text-gray-500">├── </span><span class="text-orange-400">📂 assets/</span> <span class="text-gray-500 ml-4"># 🎨 Static resources</span></div>
+                        <div class="ml-8"><span class="text-gray-500">├── </span><span class="text-gray-400">📂 icons/</span></div>
+                        <div class="ml-8"><span class="text-gray-500">├── </span><span class="text-gray-400">📂 fonts/</span></div>
+                        <div class="ml-8"><span class="text-gray-500">└── </span><span class="text-gray-400">📂 themes/</span></div>
+                        <div class="text-gray-500 ml-4">│</div>
+                        <div class="ml-4"><span class="text-gray-500">├── </span><span class="text-purple-400">📂 modules/</span> <span class="text-gray-500 ml-4"># 🧩 Core functionality</span></div>
+                        <div class="ml-8"><span class="text-gray-500">├── </span><span class="text-gray-400">player.py, visualizer.py, voice_effects.py...</span></div>
+                        <div class="text-gray-500 ml-4">│</div>
+                        <div class="ml-4"><span class="text-gray-500">├── </span><span class="text-pink-400">📂 ui/</span> <span class="text-gray-500 ml-4"># 🎨 UI definitions</span></div>
+                        <div class="ml-8"><span class="text-gray-500">└── </span><span class="text-gray-400">main_window.py, cinema_tab.py, studio_tab.py</span></div>
+                        <div class="text-gray-500 ml-4">│</div>
+                        <div class="ml-4"><span class="text-gray-500">└── </span><span class="text-teal-400">📂 utils/</span> <span class="text-gray-500 ml-4"># 🔧 Utility functions</span></div>
+                        <div class="ml-8"><span class="text-gray-500">└── </span><span class="text-gray-400">file_handler.py, media_info.py, helpers.py</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Privacy Section -->
+        <section class="py-20 px-6" id="privacy">
+            <div class="max-w-5xl mx-auto">
+                <div class="rainbow-line mb-12"></div>
+                <h2 class="section-title">
+                    <span>🔒</span> Privacy & Security
+                </h2>
+                
+                <div class="card p-10 glow-box mb-10">
+                    <h3 class="text-2xl font-bold text-center text-white mb-8">🛡️ Our Privacy Commitment</h3>
+                    <div class="overflow-x-auto">
+                        <table class="styled-table">
+                            <thead>
+                                <tr>
+                                    <th>Principle</th>
+                                    <th>Description</th>
+                                    <th>Guarantee</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>🔌 100% Offline</strong></td><td>App never connects to the internet</td><td class="status-check">✅ Verified</td></tr>
+                                <tr><td><strong>🚫 Zero Tracking</strong></td><td>No telemetry, analytics, or data collection</td><td class="status-check">✅ Verified</td></tr>
+                                <tr><td><strong>💾 Local Storage</strong></td><td>All settings stored locally on your device</td><td class="status-check">✅ Verified</td></tr>
+                                <tr><td><strong>🔓 Open Source</strong></td><td>Transparent code with no hidden backdoors</td><td class="status-check">✅ Verified</td></tr>
+                                <tr><td><strong>🔐 No Cloud Sync</strong></td><td>Your media never leaves your computer</td><td class="status-check">✅ Verified</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Data Storage Details -->
+                <div class="terminal-box">
+                    <div class="terminal-header">
+                        <div class="terminal-dot bg-red-500"></div>
+                        <div class="terminal-dot bg-yellow-500"></div>
+                        <div class="terminal-dot bg-green-500"></div>
+                        <span class="ml-4 text-gray-300 font-semibold">📂 LOCAL DATA STORAGE</span>
+                    </div>
+                    <div class="p-8 font-mono text-base">
+                        <div class="text-cyan-400 font-bold mb-4">settings.json</div>
+                        <div class="text-gray-400 space-y-1 mb-6">
+                            <p>├── 🔊 Volume level</p>
+                            <p>├── 🎵 Last played track</p>
+                            <p>├── 📋 Recent playlists</p>
+                            <p>├── 🎨 UI preferences</p>
+                            <p>├── 🎤 Last used voice preset</p>
+                            <p>└── 🖼️ Window size and position</p>
+                        </div>
+                        <div class="text-gray-500 border-t border-gray-700 pt-4">
+                            <p>📍 Location: Same directory as main.py</p>
+                            <p>🗑️ Delete anytime to reset all settings</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="py-20 px-6" id="faq">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="section-title">
+                    <span>❓</span> Frequently Asked Questions
+                </h2>
+                
+                <div class="space-y-3">
+                    <details>
+                        <summary><span>🤔</span> Is this player really 100% offline?</summary>
+                        <div>Yes! Universal Media Player is designed to work completely offline. It never connects to the internet, ensuring your media and usage patterns remain completely private.</div>
+                    </details>
+                    
+                    <details>
+                        <summary><span>🤔</span> What media formats are supported?</summary>
+                        <div>
+                            <p>Universal Media Player supports all formats that VLC Media Player supports, including:</p>
+                            <p class="mt-2"><strong class="text-purple-400">Video:</strong> MP4, MKV, AVI, MOV, WMV, FLV, WebM, and more</p>
+                            <p><strong class="text-cyan-400">Audio:</strong> MP3, FLAC, WAV, AAC, OGG, M4A, and more</p>
+                        </div>
+                    </details>
+                    
+                    <details>
+                        <summary><span>🤔</span> Can I use this commercially?</summary>
+                        <div>The current license is for personal use only. For commercial licensing inquiries, please contact the author.</div>
+                    </details>
+                    
+                    <details>
+                        <summary><span>🤔</span> Why does it require VLC to be installed?</summary>
+                        <div>Universal Media Player uses the VLC media engine (libVLC) for reliable, high-quality media playback. This provides support for virtually all media formats without additional codec installations.</div>
+                    </details>
+                    
+                    <details>
+                        <summary><span>🤔</span> Can I contribute to this project?</summary>
+                        <div>Contributions are welcome! Please fork the repository, create a feature branch, and open a Pull Request with your changes.</div>
+                    </details>
+                    
+                    <details>
+                        <summary><span>🤔</span> How do I report bugs or request features?</summary>
+                        <div>Please open an issue on the GitHub repository with a detailed description of the bug or feature request.</div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- Roadmap Section -->
+        <section class="py-20 px-6" id="roadmap">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="section-title">
+                    <span>🗺️</span> Roadmap
+                </h2>
+                
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- Completed -->
+                    <div class="card p-6">
+                        <h3 class="text-lg font-bold text-green-400 mb-4 flex items-center gap-2">
+                            <span>✅</span> Completed (v2.0.0)
+                        </h3>
+                        <ul class="space-y-2 text-gray-300 text-sm">
+                            <li class="flex items-center gap-2"><span class="text-green-400">✓</span> Cinema Mode with frameless UI</li>
+                            <li class="flex items-center gap-2"><span class="text-green-400">✓</span> Studio Mode with visualizations</li>
+                            <li class="flex items-center gap-2"><span class="text-green-400">✓</span> Real-time voice changer</li>
+                            <li class="flex items-center gap-2"><span class="text-green-400">✓</span> 200% volume boost</li>
+                            <li class="flex items-center gap-2"><span class="text-green-400">✓</span> A-B loop functionality</li>
+                            <li class="flex items-center gap-2"><span class="text-green-400">✓</span> Video screenshot capture</li>
+                            <li class="flex items-center gap-2"><span class="text-green-400">✓</span> Always on top mode</li>
+                            <li class="flex items-center gap-2"><span class="text-green-400">✓</span> Mini-player mode</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- In Progress -->
+                    <div class="card p-6">
+                        <h3 class="text-lg font-bold text-amber-400 mb-4 flex items-center gap-2">
+                            <span>🔄</span> In Progress (v2.1.0)
+                        </h3>
+                        <ul class="space-y-2 text-gray-300 text-sm">
+                            <li class="flex items-center gap-2"><span class="text-amber-400">○</span> Additional visualization modes</li>
+                            <li class="flex items-center gap-2"><span class="text-amber-400">○</span> Light/Dark theme toggle</li>
+                            <li class="flex items-center gap-2"><span class="text-amber-400">○</span> Subtitle support</li>
+                            <li class="flex items-center gap-2"><span class="text-amber-400">○</span> Audio equalizer</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Planned -->
+                    <div class="card p-6">
+                        <h3 class="text-lg font-bold text-purple-400 mb-4 flex items-center gap-2">
+                            <span>📋</span> Planned (Future)
+                        </h3>
+                        <ul class="space-y-2 text-gray-300 text-sm">
+                            <li class="flex items-center gap-2"><span class="text-purple-400">○</span> Streaming URL support</li>
+                            <li class="flex items-center gap-2"><span class="text-purple-400">○</span> Companion mobile remote app</li>
+                            <li class="flex items-center gap-2"><span class="text-purple-400">○</span> Spotify-like music library</li>
+                            <li class="flex items-center gap-2"><span class="text-purple-400">○</span> AI-powered audio enhancement</li>
+                            <li class="flex items-center gap-2"><span class="text-purple-400">○</span> Custom voice preset creator</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Author Section -->
+        <section class="py-20 px-6" id="author">
+            <div class="max-w-4xl mx-auto">
+                <div class="rainbow-line mb-12"></div>
+                <h2 class="section-title">
+                    <span>👨‍💻</span> Author
+                </h2>
+                
+                <div class="card p-10 text-center glow-box max-w-lg mx-auto">
+                    <div class="w-28 h-28 bg-gradient-to-br from-purple-500 to-cyan-500 rounded-full mx-auto mb-6 flex items-center justify-center text-5xl">
+                        👨‍💻
+                    </div>
+                    <h3 class="text-3xl font-bold text-white mb-2">Sudhir Kumar</h3>
+                    <a href="https://github.com/SudhirDevOps1" class="text-purple-400 hover:text-purple-300 transition text-lg">@SudhirDevOps1</a>
+                    
+                    <div class="flex justify-center gap-4 mt-8 mb-8">
+                        <a href="https://github.com/SudhirDevOps1" target="_blank" class="btn-secondary">
+                            <i class="fab fa-github"></i> GitHub
+                        </a>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 text-left">
+                        <div class="bg-gray-900/50 rounded-lg p-4">
+                            <div class="text-purple-400 font-bold">🎨 Designer</div>
+                            <div class="text-gray-400 text-sm">Created the modern UI/UX</div>
+                        </div>
+                        <div class="bg-gray-900/50 rounded-lg p-4">
+                            <div class="text-cyan-400 font-bold">💻 Developer</div>
+                            <div class="text-gray-400 text-sm">Built from scratch</div>
+                        </div>
+                        <div class="bg-gray-900/50 rounded-lg p-4">
+                            <div class="text-green-400 font-bold">📖 Documentation</div>
+                            <div class="text-gray-400 text-sm">Comprehensive docs</div>
+                        </div>
+                        <div class="bg-gray-900/50 rounded-lg p-4">
+                            <div class="text-amber-400 font-bold">🔧 Maintainer</div>
+                            <div class="text-gray-400 text-sm">Active updates</div>
+                        </div>
+                    </div>
+                    
+                    <blockquote class="text-gray-400 italic mt-8 border-l-4 border-purple-500 pl-4 text-left">
+                        "Empowering your offline media experience with style and privacy."
+                    </blockquote>
+                </div>
+            </div>
+        </section>
+
+        <!-- Acknowledgments -->
+        <section class="py-16 px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-2xl font-bold text-white mb-8">🙏 Acknowledgments</h2>
+                <p class="text-gray-400 mb-8">Special thanks to the amazing open-source projects that made this possible:</p>
+                
+                <div class="flex flex-wrap justify-center gap-4">
+                    <span class="badge bg-orange-600 text-white">🎬 VLC Media Player</span>
+                    <span class="badge bg-blue-600 text-white"><i class="fab fa-python mr-1"></i> Python</span>
+                    <span class="badge bg-green-600 text-white">PyQt5 Framework</span>
+                    <span class="badge bg-gray-600 text-white">❤️ Open Source Community</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- License Section -->
+        <section class="py-16 px-6" id="license">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="section-title">
+                    <span>📄</span> License
+                </h2>
+                
+                <div class="card p-10 glow-box">
+                    <p class="text-gray-300 text-xl mb-6">This project is licensed for <strong class="text-white">Personal Use Only</strong>.</p>
+                    <span class="badge bg-green-600 text-white text-xl px-8 py-3">📜 Personal Use License</span>
+                    
+                    <div class="mt-8 text-gray-500 font-mono text-sm">
+                        <p>© 2026 Universal Media Player by Sudhir Kumar</p>
+                        <p>All Rights Reserved.</p>
+                        <p class="mt-2">This software is provided for personal, non-commercial use only.</p>
+                        <p>Redistribution or commercial use requires explicit permission from the author.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="py-20 px-6 text-center border-t border-gray-800">
+            <div class="rainbow-line max-w-2xl mx-auto mb-12"></div>
+            
+            <h2 class="text-3xl font-bold text-white mb-4">
+                ⭐ If you found this project useful, please consider giving it a star!
+            </h2>
+            
+            <a href="https://github.com/SudhirDevOps1" target="_blank" class="btn-primary text-xl mt-8 inline-flex animate-pulse-glow">
+                <i class="fas fa-star"></i> Star This Repo
+            </a>
+            
+            <div class="mt-16">
+                <p class="text-xl text-gray-400 mb-4">Made with <span class="text-red-500">❤️</span> by <a href="https://github.com/SudhirDevOps1" class="text-purple-400 hover:text-purple-300 font-bold">Sudhir Kumar</a></p>
+            </div>
+            
+            <!-- Footer Wave -->
+            <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=120&section=footer&animation=twinkling" class="w-full mt-12" alt="Footer"/>
+        </footer>
+    </main>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // Back to top button
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 500) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+        
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        // Copy code functionality
+        function copyCode(btn) {
+            const codeBlock = btn.parentElement;
+            const code = codeBlock.querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                btn.textContent = '✓ Copied!';
+                btn.style.background = '#10b981';
+                setTimeout(() => {
+                    btn.textContent = '📋 Copy';
+                    btn.style.background = '';
+                }, 2000);
+            });
+        }
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+        
+        // Create visualizer bars
+        const visualizer = document.getElementById('visualizer');
+        for (let i = 0; i < 30; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'visualizer-bar';
+            bar.style.width = '8px';
+            bar.style.height = '20%';
+            bar.style.animationDelay = `${i * 0.05}s`;
+            visualizer.appendChild(bar);
+        }
+        
+        // Animate visualizer
+        function animateVisualizer() {
+            const bars = visualizer.querySelectorAll('.visualizer-bar');
+            bars.forEach((bar, index) => {
+                const height = Math.random() * 80 + 20;
+                bar.style.height = `${height}%`;
+                
+                // Create gradient based on height
+                const hue = (index * 12 + Date.now() / 50) % 360;
+                bar.style.background = `linear-gradient(to top, hsl(${hue}, 80%, 50%), hsl(${(hue + 60) % 360}, 80%, 60%))`;
+            });
+            requestAnimationFrame(animateVisualizer);
+        }
+        
+        // Start visualizer animation
+        animateVisualizer();
+        
+        // Add scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.card, .highlight-card, .spec-card, .mission-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
